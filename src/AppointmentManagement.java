@@ -2,6 +2,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class AppointmentManagement {
+
     Scanner scan = new Scanner(System.in);
     public void init(){
         try{

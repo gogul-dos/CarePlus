@@ -16,6 +16,7 @@ public class Utils {
     }
 
     public static void saveDetails() {
+
         try{
             File doctorFile = new File("doctors.dat");
             File patientFile = new File("patients.dat");

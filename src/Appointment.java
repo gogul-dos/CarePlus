@@ -1,6 +1,7 @@
 import java.io.Serializable;
 
 public class Appointment implements Serializable {
+
     Doctor doctor;
     Patient patient;
     Integer time;

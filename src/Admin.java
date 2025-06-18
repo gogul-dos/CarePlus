@@ -1,6 +1,7 @@
 import java.util.Scanner;
 
 public class Admin {
+
     private final String username = "Gogul";
     private final String password = "123";
     private final Scanner scan = new Scanner(System.in);

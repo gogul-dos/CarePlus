@@ -40,7 +40,6 @@ public class Patient implements Serializable {
         for(Appointment appoinment: todaysAppointments){
             result.append(appoinment.appointmentId+"  ");
         }
-
         return result.toString();
     }
 }

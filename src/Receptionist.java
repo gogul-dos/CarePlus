@@ -14,6 +14,7 @@ public class Receptionist implements Serializable {
         this.receptionistId = "R"+ ++counter;
     }
 
+
     public String toString(){
         return "Receptionist ID: "+this.receptionistId
                 + "\nName: "+this.name+ "\nusername: "+this.username;

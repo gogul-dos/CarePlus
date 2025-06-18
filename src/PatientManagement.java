@@ -77,6 +77,7 @@ public class PatientManagement {
         return Integer.parseInt(scan.nextLine());
     }
 
+
     private Long getMobileNumber() {
         Long number;
         while(true){

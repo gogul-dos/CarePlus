@@ -80,7 +80,7 @@ public class DoctorManagement{
 
     }
 
-    private String getSpecialization() {
+    private String getSpecialization(){
         System.out.print("Enter doctor specialization: ");
         return scan.nextLine();
     }

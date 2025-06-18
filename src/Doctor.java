@@ -36,6 +36,7 @@ public class Doctor implements Serializable {
                 timeSlots.add(j);
             }
             availableSlots.put(dateFormatted.toString(),timeSlots);
+
         }
     }
 

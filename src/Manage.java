@@ -81,7 +81,7 @@ public class Manage {
                 }
                 System.out.println("Available time slots are: ");
                 for (int i = 0; i < availableSlots.size(); i++) {
-                    System.out.println(i + 1 + ". " + availableSlots.get(i));
+                    System.out.println(i + 1 +   ". " + availableSlots.get(i));
                 }
                 System.out.print("Select a time slot :");
                 Integer time = Integer.parseInt(scan.nextLine());
