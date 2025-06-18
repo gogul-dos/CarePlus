@@ -1,5 +1,3 @@
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 public class Admin {
@@ -37,36 +35,44 @@ public class Admin {
                     break;
                 case 2:
                     new Manage().init();
+                    break;
                 case 3:
                     new CarePlus().init();
+                    break;
                 default:
                     System.out.println("Invalid Option !!");
             }
         }
     }
 
-    private void addReceptionist() throws Exception{
-        String name = enterName();
-        String username = enterUsername();
-        String password = enterPassword();
-        Receptionist receptionist = new Receptionist(name,username,password);
-        data.receptionists.put(username,receptionist);
-        System.out.println("The following Receptionist Added Successfully");
-        System.out.println(receptionist);
+    private void addReceptionist() {
+
+        try{
+            String name = enterName();
+            String user = enterUsername();
+            String pass = enterPassword();
+            Receptionist receptionist = new Receptionist(user, name, pass);
+            Data.receptionists.put(user, receptionist);
+            System.out.println("The following Receptionist Added Successfully");
+            System.out.println(receptionist);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
         return;
     }
 
     private String enterPassword() throws Exception{
-        String password;
+        String pass;
         while(true){
             System.out.print("Enter Your password: ");
-            password = scan.nextLine();
-            if(password.length()<2 ){
+            pass = scan.nextLine();
+            if(pass.length()<2 ){
                 System.out.println("password should be least 3 characters...");
             }
             else break;
         }
-        return password;
+        return pass;
     }
 
     private String enterUsername() throws Exception{

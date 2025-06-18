@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Scanner;
 
 
@@ -5,38 +6,55 @@ public class DoctorManagement{
     private final Scanner scan = new Scanner(System.in);
     public void init(){
         try{
-            showDoctorMenu();
+            while(true){
+                System.out.println("--------------- Doctor Menu ---------------");
+                System.out.println("1.Add Doctor");
+                System.out.println("2.view all doctors");
+                System.out.println("3.available slots of a doctor");
+                System.out.println("4.Back");
+                System.out.print("Choose an option: ");
+                Integer option = Integer.parseInt(scan.nextLine());
+                switch (option){
+                    case 1:
+                        addDoctor();
+                        break;
+                    case 2:
+                        viewAvailableDoctors();
+                        break;
+                    case 3:
+                        availableSlotsOfDoctor();
+                        break;
+                    case 4:
+                        return;
+                    default:
+                        System.out.println("Invalid Option !!");
+                        break;
+                }
+            }
         } catch (Exception e) {
             System.out.println("Invalid option !!");
             if (needToContinue()) init();
-            else return;
         }
     }
 
-    public void showDoctorMenu(){
-        while(true){
-            System.out.println("--------------- Doctor Menu ---------------");
-            System.out.println("1.Add Doctor");
-            System.out.println("2.view available doctors");
-            System.out.print("Choose an option: ");
-            Integer option = Integer.parseInt(scan.nextLine());
-            switch (option){
-                case 1:
-                    addDoctor();
-                    break;
-                case 2:
-                    viewAvailableDoctors();
-                    break;
-                default:
-                    System.out.println("Invalid Option !!");
-
-            }
+    private void availableSlotsOfDoctor() {
+        System.out.print("Enter the doctor ID: ");
+        String doctorId = scan.nextLine();
+        if(!Data.doctors.containsKey(doctorId)){
+            System.out.println("Invalid Doctor ID");
+            return;
         }
+        Doctor doctor = Data.doctors.get(doctorId);
+        for(String date: doctor.availableSlots.keySet()){
+            System.out.println(date+"->"+doctor.availableSlots.get(date));
+        }
+        return;
     }
 
     private void viewAvailableDoctors() {
-        for(Doctor doctor: data.doctors.values()){
+        for(Doctor doctor: Data.doctors.values()){
             System.out.println(doctor);
+            System.out.println("-------------------------------------------------------------------------");
         }
         return;
     }
@@ -48,8 +66,10 @@ public class DoctorManagement{
             Integer[] times = getTime();
             Integer startTime = times[0];
             Integer endTime = times[1];
-            Doctor doctor = new Doctor(name,mobileNumber,startTime,endTime);
-            data.doctors.put(name,doctor);
+            String specialization = getSpecialization();
+            Doctor doctor = new Doctor(name,mobileNumber,startTime,endTime,specialization);
+            Data.doctors.put(doctor.doctorId,doctor);
+            System.out.println("Doctor Added successfully");
             return;
         }
         catch (Exception e){
@@ -58,6 +78,11 @@ public class DoctorManagement{
             else return;
         }
 
+    }
+
+    private String getSpecialization() {
+        System.out.print("Enter doctor specialization: ");
+        return scan.nextLine();
     }
 
     private Integer[] getTime() throws Exception{
@@ -70,7 +95,7 @@ public class DoctorManagement{
                 case 1:
                     return new Integer[]{9,12};
                 case 2:
-                    return new Integer[]{12,3};
+                    return new Integer[]{12,15};
                 case 3:
                     System.out.print("Starting work time in integer format (EX:9 for 9 AM and 13 for 1 PM) : ");
                     Integer start = Integer.parseInt(scan.nextLine());

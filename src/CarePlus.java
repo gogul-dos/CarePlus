@@ -36,22 +36,26 @@ public class CarePlus {
         }
     }
 
-    private void loginReceptionist() throws Exception{
-        String username = getUserName();
-        if(!data.receptionists.containsKey(username)){
-            System.out.println("Invalid username !!");
-            if(needToContinue()) loginReceptionist();
-            else return;
-        }
-        String password = getPassword();
-        if(!data.receptionists.get(username).password.equals(password)){
-            System.out.println("Password Mismatch !!");
-            if(needToContinue()) loginReceptionist();
-            else return;
-        }
+    private void loginReceptionist() {
+        try{
+            String username = getUserName();
+            if (Data.receptionists.get(username) == null) {
+                System.out.println("username not found !!");
+                if (needToContinue()) loginReceptionist();
+                else return;
+            }
+            String password = getPassword();
+            if (!Data.receptionists.get(username).password.equals(password)) {
+                System.out.println("Password Mismatch !!");
+                if (needToContinue()) loginReceptionist();
+                else return;
+            }
 
-        if(data.receptionists.containsKey(username) && data.receptionists.get(username).password.equals(password)){
-            new Manage().init();
+            if (Data.receptionists.get(username)!=null && Data.receptionists.get(username).password.equals(password)) {
+                new Manage().init();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }

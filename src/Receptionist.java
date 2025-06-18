@@ -3,7 +3,7 @@ public class Receptionist {
     String name;
     String password;
     String receptionistId;
-    static Integer counter;
+    static Integer counter = 0;
 
     public Receptionist(String username, String name, String password) {
         this.username = username;
@@ -16,5 +16,4 @@ public class Receptionist {
         return "Receptionist ID: "+this.receptionistId
                 + "\nName: "+this.name+ "\nusername: "+this.username;
     }
-
 }
