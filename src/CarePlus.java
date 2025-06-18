@@ -1,0 +1,114 @@
+import java.util.Scanner;
+
+public class CarePlus {
+    private final Scanner scan = new Scanner(System.in);
+    private final Admin admin = new Admin();
+    public void init(){
+        try{
+            showMainMenu();
+        } catch (Exception e) {
+            System.out.println("Invalid Option !!");
+            init();
+        }
+    }
+
+    private void showMainMenu() throws Exception{
+        while(true){
+            System.out.println("---------Care Plus -------------");
+            System.out.println("1.Register Admin");
+            System.out.println("2.Login Admin");
+            System.out.println("3.Login Receptionist");
+            System.out.print("Enter an option:");
+            Integer option = Integer.parseInt(scan.nextLine());
+            switch (option){
+                case 1:
+                    registerAdmin();
+                    break;
+                case 2:
+                    loginAdmin();
+                    break;
+                case 3:
+                    loginReceptionist();
+                    break;
+                default:
+                    System.out.println("Invalid Option");
+            }
+        }
+    }
+
+    private void loginReceptionist() throws Exception{
+        String username = getUserName();
+        if(!data.receptionists.containsKey(username)){
+            System.out.println("Invalid username !!");
+            if(needToContinue()) loginReceptionist();
+            else return;
+        }
+        String password = getPassword();
+        if(!data.receptionists.get(username).password.equals(password)){
+            System.out.println("Password Mismatch !!");
+            if(needToContinue()) loginReceptionist();
+            else return;
+        }
+
+        if(data.receptionists.containsKey(username) && data.receptionists.get(username).password.equals(password)){
+            new Manage().init();
+        }
+
+    }
+
+    private void loginAdmin() throws Exception{
+        String username = getUserName();
+        if(!username.equals(admin.getUsername())){
+            System.out.println("Invalid username");
+            if(needToContinue()) loginAdmin();
+            else return;
+        }
+        String password = getPassword();
+        if(!password.equals(admin.getPassword())){
+            System.out.println("Password Mismatch!");
+            if(needToContinue()) loginAdmin();
+            else return;
+        }
+        if(username.equals(admin.getUsername()) && password.equals(admin.getPassword())){
+            admin.init();
+        }
+    }
+
+    private boolean needToContinue() {
+        System.out.print("Do You Want To Continue? (Y/N)");
+        return scan.nextLine().equalsIgnoreCase("y");
+    }
+
+
+    private String getPassword() {
+        String password;
+        while(true){
+            System.out.print("Enter Your password: ");
+            password = scan.nextLine();
+            if(password.length()<2 ){
+                System.out.println("password should be least 3 characters...");
+            }
+            else break;
+        }
+        return password;
+    }
+
+    private String getUserName() {
+        String name;
+        while(true){
+            System.out.print("Enter Your username: ");
+            name = scan.nextLine();
+            if(name.length()<2 ){
+                System.out.println("Username should be least 3 characters...");
+            }
+            else break;
+        }
+        return name;
+    }
+
+    private void registerAdmin()throws Exception {
+        loginAdmin();
+    }
+
+
+}
