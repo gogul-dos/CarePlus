@@ -5,10 +5,11 @@ public class CarePlus {
     private final Admin admin = new Admin();
     public void init(){
         try{
+            Utils.fetchDetails();
             showMainMenu();
         } catch (Exception e) {
             System.out.println("Invalid Option !!");
-            init();
+            if(Utils.needToContinue()) init();
         }
     }
 

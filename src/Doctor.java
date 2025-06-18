@@ -42,6 +42,6 @@ public class Doctor implements Serializable {
     public String toString(){
         return "Doctor ID: "+ this.doctorId+ " \nDoctor name: "+ this.name +
                 " \nContact Info: "+mobileNumber+"\nStarting time: "+this.startTime
-                +"\nEnding time: "+this.endTime;
+                +"\nEnding time: "+this.endTime+"\nspecialization: "+this.specialization;
     }
 }

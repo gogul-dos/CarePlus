@@ -11,6 +11,7 @@ public class Utils {
     }
 
     public static void logout(){
+        saveDetails();
         new CarePlus().init();
     }
 
@@ -31,7 +32,7 @@ public class Utils {
             ObjectOutputStream oas = new ObjectOutputStream(new FileOutputStream(appointmentsFile));
             oas.writeObject(Data.appoinments);
             ObjectOutputStream ors = new ObjectOutputStream(new FileOutputStream(receptionistsFile));
-            ors.writeObject(Data.appoinments);
+            ors.writeObject(Data.receptionists);
             ods.close();
             ops.close();
             oas.close();
@@ -52,18 +53,27 @@ public class Utils {
             if (!patientFile.exists()) patientFile.createNewFile();
             if (!appointmentsFile.exists()) appointmentsFile.createNewFile();
             if (!receptionistsFile.exists()) receptionistsFile.createNewFile();
-            ObjectInputStream idr = new ObjectInputStream(new FileInputStream(doctorFile));
-            Data.doctors=(Map<String, Doctor>)idr.readObject();
-            ObjectInputStream ipr = new ObjectInputStream(new FileInputStream(patientFile));
-            Data.patients =(Map<String, Patient>) ipr.readObject();
-            ObjectInputStream iar = new ObjectInputStream(new FileInputStream(appointmentsFile));
-            Data.appoinments = (Map<String, Appointment>) iar.readObject();
-            ObjectInputStream irr = new ObjectInputStream(new FileInputStream(receptionistsFile));
-            Data.receptionists = (Map<String,Receptionist>) irr.readObject();
-            idr.close();
-            ipr.close();
-            iar.close();
-            irr.close();
+            if(doctorFile.length()>0){
+                ObjectInputStream idr = new ObjectInputStream(new FileInputStream(doctorFile));
+                Data.doctors=(Map<String, Doctor>)idr.readObject();
+                idr.close();
+            }
+            if(patientFile.length()>0){
+                ObjectInputStream ipr = new ObjectInputStream(new FileInputStream(patientFile));
+                Data.patients =(Map<String, Patient>) ipr.readObject();
+                ipr.close();
+            }
+            if(appointmentsFile.length()>0){
+                ObjectInputStream iar = new ObjectInputStream(new FileInputStream(appointmentsFile));
+                Data.appoinments = (Map<String, Appointment>) iar.readObject();
+                iar.close();
+            }
+
+            if(receptionistsFile.length()>0){
+                ObjectInputStream irr = new ObjectInputStream(new FileInputStream(receptionistsFile));
+                Data.receptionists = (Map<String,Receptionist>) irr.readObject();
+                irr.close();
+            }
             System.out.println("Files Loaded SuccessFully");
         }
         catch (Exception e){

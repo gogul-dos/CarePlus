@@ -57,7 +57,7 @@ public class Manage {
             return;
         }
         Patient patient = Data.patients.get(patientId);
-        System.out.println("Enter the type of  doctors need to be appointed: ");
+        System.out.println("Enter the type of  doctors need to be appointed (EX: baby doctor, heart): ");
         String required = scan.nextLine();
         if(!printDoctorsType(required)){
             System.out.println("No doctor available for : "+required );
