@@ -1,4 +1,6 @@
-public class Receptionist {
+import java.io.Serializable;
+
+public class Receptionist implements Serializable {
     String username;
     String name;
     String password;

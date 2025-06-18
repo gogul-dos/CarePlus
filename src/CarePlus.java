@@ -15,19 +15,18 @@ public class CarePlus {
     private void showMainMenu() throws Exception{
         while(true){
             System.out.println("---------Care Plus -------------");
-            System.out.println("1.Register Admin");
-            System.out.println("2.Login Admin");
-            System.out.println("3.Login Receptionist");
+
+            System.out.println("Admin username:Gogul");
+            System.out.println("Admin password:123");
+            System.out.println("1.Login Admin");
+            System.out.println("2.Login Receptionist");
             System.out.print("Enter an option:");
             Integer option = Integer.parseInt(scan.nextLine());
             switch (option){
                 case 1:
-                    registerAdmin();
-                    break;
-                case 2:
                     loginAdmin();
                     break;
-                case 3:
+                case 2:
                     loginReceptionist();
                     break;
                 default:

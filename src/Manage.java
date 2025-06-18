@@ -91,7 +91,7 @@ public class Manage {
             Integer selectedTime = availableSlots.get(time-1);
             availableSlots.remove(time-1);
             doctor.availableSlots.put(date,availableSlots);
-            Appoinment appoinment = new Appoinment(doctor,patient,selectedTime,date);
+            Appointment appoinment = new Appointment(doctor,patient,selectedTime,date);
             patient.bookedAppoinments.add(appoinment);
             Data.appoinments.put(appoinment.appointmentId,appoinment);
             System.out.println("The Following Appointment is SuccessFull");

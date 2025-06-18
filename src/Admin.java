@@ -27,7 +27,9 @@ public class Admin {
             System.out.println("-----------Admin Menu-------------");
             System.out.println("1.Add Receptionist");
             System.out.println("2.Manage CarePlus");
-            System.out.println("3.Logout");
+            System.out.println("3.Export Data");
+            System.out.println("4.Import Data");
+            System.out.println("5.Logout");
             Integer option = Integer.parseInt(scan.nextLine());
             switch (option){
                 case 1:
@@ -37,6 +39,12 @@ public class Admin {
                     new Manage().init();
                     break;
                 case 3:
+                    Utils.saveDetails();
+                    break;
+                case 4:
+                    Utils.fetchDetails();
+                    break;
+                case 5:
                     new CarePlus().init();
                     break;
                 default:

@@ -1,15 +1,16 @@
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Patient {
+public class Patient implements Serializable {
     String patientId;
     String name;
     Long mobileNumber;
     Integer age;
     String gender;
-    List<Appoinment> bookedAppoinments;
+    List<Appointment> bookedAppoinments;
     static Integer counter = 0;
 
     public Patient(String name, Long mobileNumber, Integer age, String gender) {
@@ -27,8 +28,8 @@ public class Patient {
                 + "\nContact Info: " + this.mobileNumber +"\nToday Appointment Id's are:");
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-YYYY");
         String today = sdf.format(new Date());
-        List<Appoinment> todaysAppointments = new ArrayList<>();
-        for(Appoinment appoinment: bookedAppoinments){
+        List<Appointment> todaysAppointments = new ArrayList<>();
+        for(Appointment appoinment: bookedAppoinments){
             if(appoinment.date.equals(today)) todaysAppointments.add(appoinment);
         }
 
@@ -36,7 +37,7 @@ public class Patient {
             result.append("No Appointments");
             return result.toString();
         }
-        for(Appoinment appoinment: todaysAppointments){
+        for(Appointment appoinment: todaysAppointments){
             result.append(appoinment.appointmentId+"  ");
         }
 

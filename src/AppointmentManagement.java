@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -46,9 +44,9 @@ public class AppointmentManagement {
             System.out.println("Invalid patient ID ");
             return;
         }
-        Map<String,Appoinment> appointments = Data.appoinments;
+        Map<String, Appointment> appointments = Data.appoinments;
         for(String key: appointments.keySet()){
-            Appoinment appoinment = appointments.get(key);
+            Appointment appoinment = appointments.get(key);
             if(appoinment.patient.patientId.equals(patientId)) displayAppointment(appoinment);
         }
     }
@@ -60,21 +58,21 @@ public class AppointmentManagement {
             System.out.println("Invalid Doctor ID ");
             return;
         }
-        Map<String,Appoinment> appointments = Data.appoinments;
+        Map<String, Appointment> appointments = Data.appoinments;
         for(String key: appointments.keySet()){
-            Appoinment appoinment = appointments.get(key);
+            Appointment appoinment = appointments.get(key);
             if(appoinment.doctor.doctorId.equals(doctorId)) displayAppointment(appoinment);
         }
     }
 
     private void viewAllAppointments() {
-        Map<String,Appoinment> appointments = Data.appoinments;
+        Map<String, Appointment> appointments = Data.appoinments;
         for(String key: appointments.keySet()){
-            Appoinment appoinment = appointments.get(key);
+            Appointment appoinment = appointments.get(key);
             displayAppointment(appoinment);
         }
     }
-    private void displayAppointment(Appoinment appoinment){
+    private void displayAppointment(Appointment appoinment){
         System.out.println("Appointment ID: "+appoinment.appointmentId);
         System.out.println("Assigned Doctor: "+appoinment.doctor.name);
         System.out.println("Appointed Patient: "+ appoinment.patient.name);

@@ -1,4 +1,6 @@
-public class Appoinment {
+import java.io.Serializable;
+
+public class Appointment implements Serializable {
     Doctor doctor;
     Patient patient;
     Integer time;
@@ -6,7 +8,7 @@ public class Appoinment {
     String appointmentId;
     static Integer counter = 0;
 
-    public Appoinment(Doctor doctor, Patient patient, Integer time, String date) {
+    public Appointment(Doctor doctor, Patient patient, Integer time, String date) {
         this.doctor = doctor;
         this.patient = patient;
         this.time = time;

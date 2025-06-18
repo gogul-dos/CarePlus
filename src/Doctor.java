@@ -1,7 +1,8 @@
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class Doctor {
+public class Doctor implements Serializable {
     String name;
     String doctorId;
     Long mobileNumber;
