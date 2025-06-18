@@ -33,7 +33,7 @@ public class DoctorManagement{
             }
         } catch (Exception e) {
             System.out.println("Invalid option !!");
-            if (needToContinue()) init();
+            if (Utils.needToContinue()) init();
         }
     }
 
@@ -74,7 +74,7 @@ public class DoctorManagement{
         }
         catch (Exception e){
             System.out.println("Invalid Input");
-            if(needToContinue()) addDoctor();
+            if(Utils.needToContinue()) addDoctor();
             else return;
         }
 
@@ -131,10 +131,5 @@ public class DoctorManagement{
             }else break;
         }
         return name;
-    }
-
-    public boolean  needToContinue() {
-        System.out.print("Do You Want To Continue? (Y/N)");
-        return scan.nextLine().equalsIgnoreCase("y");
     }
 }

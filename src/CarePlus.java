@@ -41,13 +41,13 @@ public class CarePlus {
             String username = getUserName();
             if (Data.receptionists.get(username) == null) {
                 System.out.println("username not found !!");
-                if (needToContinue()) loginReceptionist();
+                if (Utils.needToContinue()) loginReceptionist();
                 else return;
             }
             String password = getPassword();
             if (!Data.receptionists.get(username).password.equals(password)) {
                 System.out.println("Password Mismatch !!");
-                if (needToContinue()) loginReceptionist();
+                if (Utils.needToContinue()) loginReceptionist();
                 else return;
             }
 
@@ -64,25 +64,19 @@ public class CarePlus {
         String username = getUserName();
         if(!username.equals(admin.getUsername())){
             System.out.println("Invalid username");
-            if(needToContinue()) loginAdmin();
+            if(Utils.needToContinue()) loginAdmin();
             else return;
         }
         String password = getPassword();
         if(!password.equals(admin.getPassword())){
             System.out.println("Password Mismatch!");
-            if(needToContinue()) loginAdmin();
+            if(Utils.needToContinue()) loginAdmin();
             else return;
         }
         if(username.equals(admin.getUsername()) && password.equals(admin.getPassword())){
             admin.init();
         }
     }
-
-    private boolean needToContinue() {
-        System.out.print("Do You Want To Continue? (Y/N)");
-        return scan.nextLine().equalsIgnoreCase("y");
-    }
-
 
     private String getPassword() {
         String password;
@@ -108,10 +102,6 @@ public class CarePlus {
             else break;
         }
         return name;
-    }
-
-    private void registerAdmin()throws Exception {
-        loginAdmin();
     }
 
 

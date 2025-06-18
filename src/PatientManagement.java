@@ -29,6 +29,7 @@ public class PatientManagement {
             }
         }catch (Exception e){
             System.out.println("Error inside patient management ");
+            if(Utils.needToContinue()) init();
         }
     }
 
@@ -60,7 +61,7 @@ public class PatientManagement {
             return;
         }
         catch (Exception e){
-            System.out.println("Invalid Input");
+            System.out.println("Error occurred while adding patient");
             if(Utils.needToContinue()) addPatient();
             else return;
         }

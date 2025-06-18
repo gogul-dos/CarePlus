@@ -18,7 +18,7 @@ public class Admin {
 
         } catch (Exception e) {
             System.out.println("invalid input !!");
-            init();
+            if(Utils.needToContinue())init();
         }
     }
 
