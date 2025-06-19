@@ -1,15 +1,22 @@
+package base;
+
+import careplus.CarePlus;
+import entity.Appointment;
+import entity.Doctor;
+import entity.Patient;
+import entity.Receptionist;
+import storage.Data;
+
 import java.io.*;
 import java.util.Map;
 import java.util.Scanner;
 
-public class Utils {
+public class Base {
     static Scanner scan = new Scanner(System.in);
     public static boolean  needToContinue() {
         System.out.print("Do You Want To Continue? (Y/N)");
-
         return scan.nextLine().equalsIgnoreCase("y");
     }
-
     public static void logout(){
         saveDetails();
         new CarePlus().init();
@@ -57,28 +64,34 @@ public class Utils {
             if(doctorFile.length()>0){
                 ObjectInputStream idr = new ObjectInputStream(new FileInputStream(doctorFile));
                 Data.doctors=(Map<String, Doctor>)idr.readObject();
+                for(Doctor doctor: Data.doctors.values())  doctor.refreshSlots();
                 idr.close();
+                Doctor.doctorCounter = Data.doctors.size();
             }
             if(patientFile.length()>0){
                 ObjectInputStream ipr = new ObjectInputStream(new FileInputStream(patientFile));
                 Data.patients =(Map<String, Patient>) ipr.readObject();
                 ipr.close();
+                Patient.counter = Data.patients.size();
             }
             if(appointmentsFile.length()>0){
                 ObjectInputStream iar = new ObjectInputStream(new FileInputStream(appointmentsFile));
                 Data.appoinments = (Map<String, Appointment>) iar.readObject();
                 iar.close();
+                Appointment.counter = Data.appoinments.size();
             }
 
             if(receptionistsFile.length()>0){
                 ObjectInputStream irr = new ObjectInputStream(new FileInputStream(receptionistsFile));
-                Data.receptionists = (Map<String,Receptionist>) irr.readObject();
+                Data.receptionists = (Map<String, Receptionist>) irr.readObject();
                 irr.close();
+                Receptionist.counter = Data.receptionists.size();
             }
             System.out.println("Files Loaded SuccessFully");
         }
         catch (Exception e){
             System.out.println("Error occurred while reading files");
+            e.printStackTrace();
         }
     }
 }

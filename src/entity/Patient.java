@@ -1,3 +1,7 @@
+package entity;
+
+import storage.Data;
+
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -5,13 +9,14 @@ import java.util.Date;
 import java.util.List;
 
 public class Patient implements Serializable {
-    String patientId;
-    String name;
+    private static final long serialVersionUID = 3L;
+    public String patientId;
+    public String name;
     Long mobileNumber;
     Integer age;
     String gender;
-    List<Appointment> bookedAppoinments;
-    static Integer counter = 0;
+    public List<Appointment> bookedAppoinments;
+    public static Integer counter = Data.patients.size();
 
     public Patient(String name, Long mobileNumber, Integer age, String gender) {
         this.patientId = "P" + ++counter;
@@ -37,8 +42,8 @@ public class Patient implements Serializable {
             result.append("No Appointments");
             return result.toString();
         }
-        for(Appointment appoinment: todaysAppointments){
-            result.append(appoinment.appointmentId+"  ");
+        for(Appointment appointment: todaysAppointments){
+            result.append(appointment.appointmentId).append("  ");
         }
         return result.toString();
     }
