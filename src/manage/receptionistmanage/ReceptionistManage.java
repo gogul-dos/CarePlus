@@ -1,19 +1,27 @@
 package manage.receptionistmanage;
 
 import base.Base;
+import dao.AppointmentDAO;
+import dao.DoctorDAO;
+import dao.DoctorSlotDAO;
+import dao.PatientDAO;
 import entity.Appointment;
 import entity.Doctor;
 import entity.Patient;
 import manage.appointmentmanage.AppointmentManagement;
 import manage.doctormange.DoctorManagement;
 import manage.patientmanage.PatientManagement;
-import storage.Data;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class ReceptionistManage {
     private final Scanner scan = new Scanner(System.in);
+    private final DoctorDAO doctorDAO = new DoctorDAO();
+    private final PatientDAO patientDAO = new PatientDAO();
+    private final AppointmentDAO appointmentDAO = new AppointmentDAO();
+    private final DoctorSlotDAO doctorSlotDAO = new DoctorSlotDAO();
 
     public void init() {
         try {
@@ -54,11 +62,12 @@ public class ReceptionistManage {
     }
 
     private void viewDoctors() {
-        if (Data.doctors.isEmpty()) {
+        Map<String, Doctor> doctors = doctorDAO.getAllDoctors();
+        if (doctors.isEmpty()) {
             System.out.println("No data available regarding doctors.");
             return;
         }
-        for (Doctor doctor : Data.doctors.values()) {
+        for (Doctor doctor : doctors.values()) {
             System.out.println(doctor);
             System.out.println("---------------------------------------------------");
         }
@@ -74,48 +83,46 @@ public class ReceptionistManage {
                 System.out.println("Invalid Patient ID format. Use format like P1, P2.");
                 return;
             }
-            if (!Data.patients.containsKey(patientId)) {
-                System.out.println("Invalid patient ID");
+            Patient patient = patientDAO.getPatientById(patientId);
+            if (patient == null) {
+                System.out.println("Patient not found.");
                 return;
             }
-            Patient patient = Data.patients.get(patientId);
 
             System.out.print("Enter required specialization (e.g. heart): ");
             String specialization = scan.nextLine();
-            boolean found = false;
-            for (Doctor doc : Data.doctors.values()) {
-                if (doc.specialization.equalsIgnoreCase(specialization)) {
-                    System.out.println(doc);
-                    System.out.println("------------------------------------------------------------------------");
-                    found = true;
-                }
-            }
-            if (!found) {
+            Map<String, Doctor> doctorMap = doctorDAO.getDoctorsBySpecialization(specialization);
+            if (doctorMap.isEmpty()) {
                 System.out.println("No doctors found for specialization: " + specialization);
                 return;
+            }
+
+            for (Doctor doc : doctorMap.values()) {
+                System.out.println(doc);
+                System.out.println("------------------------------------------------------------------------");
             }
 
             System.out.print("Enter doctor ID: ");
             String doctorId = scan.nextLine();
             if (!doctorId.matches("D\\d+")) {
-                System.out.println("Invalid Doctor ID format. Use format like D1, D2.");
+                System.out.println("Invalid Doctor ID format.");
                 return;
             }
-            if (!Data.doctors.containsKey(doctorId)) {
-                System.out.println("Invalid doctor ID");
+            Doctor doctor = doctorDAO.getDoctorById(doctorId);
+            if (doctor == null) {
+                System.out.println("Doctor not found.");
                 return;
             }
 
-            Doctor doctor = Data.doctors.get(doctorId);
             System.out.print("Enter appointment date (dd-MM-yyyy): ");
             String date = scan.nextLine();
 
-            if (!doctor.availableSlots.containsKey(date) || doctor.availableSlots.get(date).isEmpty()) {
+            List<Integer> slots = doctorSlotDAO.getAvailableSlotsByDoctorAndDate(doctorId, date);
+            if (slots == null || slots.isEmpty()) {
                 System.out.println("Doctor not available on that date.");
                 return;
             }
 
-            List<Integer> slots = doctor.availableSlots.get(date);
             System.out.println("Available slots:");
             for (int i = 0; i < slots.size(); i++) {
                 System.out.println((i + 1) + ". " + slots.get(i));
@@ -133,15 +140,17 @@ public class ReceptionistManage {
                 return;
             }
 
-            int time = slots.remove(slotChoice - 1);
-            doctor.availableSlots.put(date, slots);
-
+            int time = slots.get(slotChoice - 1);
             Appointment appointment = new Appointment(doctor, patient, time, date);
-            patient.bookedAppoinments.add(appointment);
-            Data.appoinments.put(appointment.appointmentId, appointment);
+            appointment.appointmentId = appointmentDAO.getNextAppointmentId();
+            boolean success = appointmentDAO.bookAppointment(appointment);
+            if (success) {
+                System.out.println("Appointment booked successfully.");
+                doctorSlotDAO.removeSlot(doctorId, date, time);
+            } else {
+                System.out.println("Failed to book appointment.");
+            }
 
-            System.out.println("Appointment booked successfully:");
-            System.out.println(appointment);
         } catch (Exception e) {
             System.out.println("Error while booking.");
             if (Base.needToContinue()) bookAppointment();

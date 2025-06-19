@@ -1,13 +1,17 @@
 package manage.doctormange;
 
 import base.Base;
+import dao.DoctorDAO;
+import dao.DoctorSlotDAO;
 import entity.Doctor;
-import storage.Data;
 
+import java.util.Map;
 import java.util.Scanner;
 
 public class DoctorManagement {
     private final Scanner scan = new Scanner(System.in);
+    private final DoctorDAO doctorDAO = new DoctorDAO();
+    private final DoctorSlotDAO slotDAO = new DoctorSlotDAO();
 
     public void init() {
         try {
@@ -46,13 +50,22 @@ public class DoctorManagement {
             String name = getName();
             Long mobileNumber = getMobileNumber();
             Integer[] times = getTime();
+            if(times==null) return;
             Integer startTime = times[0];
             Integer endTime = times[1];
             String specialization = getSpecialization();
+
             Doctor doctor = new Doctor(name, mobileNumber, startTime, endTime, specialization);
-            Data.doctors.put(doctor.doctorId, doctor);
-            System.out.println("The following Doctor added successfully.");
-            System.out.println(doctor);
+            doctor.doctorId = doctorDAO.getNextDoctorId();
+
+            boolean success = doctorDAO.addDoctor(doctor);
+            if (success) {
+                slotDAO.refreshSlots(doctor.doctorId, doctor.startTime, doctor.endTime);
+                System.out.println("The following Doctor added successfully:");
+                System.out.println(doctor);
+            } else {
+                System.out.println("Failed to add doctor.");
+            }
         } catch (Exception e) {
             System.out.println("Error while adding doctor.");
             if (Base.needToContinue()) addDoctor();
@@ -66,8 +79,9 @@ public class DoctorManagement {
             System.out.println("Invalid Doctor ID format. Use format like D1, D2.");
             return;
         }
-        if (Data.doctors.containsKey(doctorId)) {
-            Data.doctors.remove(doctorId);
+        boolean removed = doctorDAO.removeDoctor(doctorId);
+        if (removed) {
+            slotDAO.deleteSlotsByDoctor(doctorId);
             System.out.println("Doctor removed successfully.");
         } else {
             System.out.println("Doctor ID not found.");
@@ -75,11 +89,12 @@ public class DoctorManagement {
     }
 
     public void viewAvailableDoctors() {
-        if (Data.doctors.isEmpty()) {
+        Map<String, Doctor> doctors = doctorDAO.getAllDoctors();
+        if (doctors.isEmpty()) {
             System.out.println("No data available regarding doctors.");
             return;
         }
-        for (Doctor doctor : Data.doctors.values()) {
+        for (Doctor doctor : doctors.values()) {
             System.out.println(doctor);
             System.out.println("-------------------------------------------------------------------------");
         }
@@ -92,17 +107,23 @@ public class DoctorManagement {
             System.out.println("Invalid Doctor ID format. Use format like D1, D2.");
             return;
         }
-        if (!Data.doctors.containsKey(doctorId)) {
+
+        Doctor doctor = doctorDAO.getDoctorById(doctorId);
+        if (doctor == null) {
             System.out.println("Invalid Doctor ID");
             return;
         }
-        Doctor doctor = Data.doctors.get(doctorId);
-        if (doctor.availableSlots.isEmpty()) {
+
+        slotDAO.refreshSlots(doctor.doctorId, doctor.startTime, doctor.endTime);
+
+        Map<String, java.util.List<Integer>> slotMap = slotDAO.getAllSlots().getOrDefault(doctorId, Map.of());
+        if (slotMap.isEmpty()) {
             System.out.println("No available slots found for this doctor.");
             return;
         }
-        for (String date : doctor.availableSlots.keySet()) {
-            System.out.println(date + " -> " + doctor.availableSlots.get(date));
+
+        for (String date : slotMap.keySet()) {
+            System.out.println(date + " -> " + slotMap.get(date));
         }
     }
 
@@ -127,8 +148,26 @@ public class DoctorManagement {
                     case 3 -> {
                         System.out.print("Start time (e.g., 9 for 9AM, 13 for 1PM): ");
                         int start = Integer.parseInt(scan.nextLine());
+                        if(start<1){
+                            System.out.println("Start Time Should be greater than 1.");
+                            System.out.println("Try Some Other Time...");
+                            if(Base.needToContinue()) return getTime();
+                            return null;
+                        }
                         System.out.print("End time (e.g., 17 for 5PM): ");
                         int end = Integer.parseInt(scan.nextLine());
+                        if(end<start){
+                            System.out.println("End Time Should be greater than starting time.");
+                            System.out.println("Try Some Other Time...");
+                            if(Base.needToContinue()) return getTime();
+                            return null;
+                        }
+                        if(end>23){
+                            System.out.println("Invalid End Time");
+                            System.out.println("Try Some Other Time...");
+                            if(Base.needToContinue()) return getTime();
+                            return null;
+                        }
                         return new Integer[]{start, end};
                     }
                     default -> System.out.println("Invalid option. Try again.");

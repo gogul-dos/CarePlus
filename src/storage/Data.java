@@ -11,4 +11,5 @@ public class Data {
     public static Map<String, Patient> patients = new LinkedHashMap<>();
     public static Map<String, Appointment> appoinments = new LinkedHashMap<>();
     public static Map<String, Receptionist> receptionists = new LinkedHashMap<>();
+
 }

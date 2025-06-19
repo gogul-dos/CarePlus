@@ -1,15 +1,17 @@
 package careplus;
 
 import base.Base;
+import dao.ReceptionistDAO;
+import entity.Receptionist;
 import manage.adminmanage.AdminManagement;
 import manage.receptionistmanage.ReceptionistManage;
-import storage.Data;
 
 import java.util.Scanner;
 
 public class CarePlus {
     private final Scanner scan = new Scanner(System.in);
     private final AdminManagement adminManagement = new AdminManagement();
+    private final ReceptionistDAO receptionistDAO = new ReceptionistDAO();
 
     public void init() {
         try {
@@ -43,17 +45,10 @@ public class CarePlus {
             }
 
             switch (option) {
-                case 1:
-                    loginAdmin();
-                    break;
-                case 2:
-                    loginReceptionist();
-                    break;
-                case 3:
-                    Base.saveDetails();
-                    System.exit(0);
-                default:
-                    System.out.println("Invalid Option");
+                case 1 -> loginAdmin();
+                case 2 -> loginReceptionist();
+                case 3 -> System.exit(0);
+                default -> System.out.println("Invalid Option");
             }
         }
     }
@@ -61,22 +56,25 @@ public class CarePlus {
     private void loginReceptionist() {
         try {
             String username = getUserName();
-            if (Data.receptionists.get(username) == null) {
-                System.out.println("username not found !!");
+            Receptionist receptionist = receptionistDAO.getReceptionistByUsername(username);
+            if (receptionist == null) {
+                System.out.println("Username not found!");
                 if (Base.needToContinue()) loginReceptionist();
                 else return;
             }
+
             String password = getPassword();
-            if (!Data.receptionists.get(username).password.equals(password)) {
-                System.out.println("Password Mismatch !!");
+            if (!receptionist.password.equals(password)) {
+                System.out.println("Password Mismatch!");
                 if (Base.needToContinue()) loginReceptionist();
                 else return;
             }
-            System.out.println("Receptionist Logged in  Successfully");
+
             new ReceptionistManage().init();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error during receptionist login.");
+            if (Base.needToContinue()) loginReceptionist();
         }
     }
 
@@ -93,35 +91,31 @@ public class CarePlus {
             if (Base.needToContinue()) loginAdmin();
             else return;
         }
-        System.out.println("Admin Logged In SuccessFully");
+
         adminManagement.init();
     }
 
     private String getPassword() {
-        String password;
         while (true) {
             System.out.print("Enter Your password: ");
-            password = scan.nextLine();
+            String password = scan.nextLine();
             if (password.length() < 3) {
                 System.out.println("Password should be at least 3 characters...");
             } else if (!password.matches("[a-zA-Z0-9]+")) {
-                System.out.println("Password must contain only letters and digits.");
-            } else break;
+                System.out.println("Password must contain only letters.");
+            } else return password;
         }
-        return password;
     }
 
     private String getUserName() {
-        String name;
         while (true) {
             System.out.print("Enter Your username: ");
-            name = scan.nextLine();
+            String name = scan.nextLine();
             if (name.length() < 3) {
                 System.out.println("Username should be at least 3 characters...");
             } else if (!name.matches("[a-zA-Z]+")) {
                 System.out.println("Username must contain only letters.");
-            } else break;
+            } else return name;
         }
-        return name;
     }
 }

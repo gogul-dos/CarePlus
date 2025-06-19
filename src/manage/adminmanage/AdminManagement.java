@@ -5,13 +5,16 @@ import entity.Admin;
 import entity.Receptionist;
 import careplus.CarePlus;
 import manage.doctormange.DoctorManagement;
-import storage.Data;
+import dao.ReceptionistDAO;
+
+import java.util.Map;
 import java.util.Scanner;
 
 public class AdminManagement {
 
-    private final Admin admin = Data.admin;
+    private final Admin admin = new Admin("Gogul", "123");
     private final Scanner scan = new Scanner(System.in);
+    private final ReceptionistDAO receptionistDAO = new ReceptionistDAO();
 
     public String getPassword() {
         return admin.password;
@@ -37,9 +40,7 @@ public class AdminManagement {
             System.out.println("2. Remove Receptionist");
             System.out.println("3. View Receptionists");
             System.out.println("4. Manage Doctors");
-            System.out.println("5. Export Data");
-            System.out.println("6. Import Data");
-            System.out.println("7. Logout");
+            System.out.println("5. Logout");
             System.out.print("Enter an option: ");
 
             try {
@@ -51,9 +52,7 @@ public class AdminManagement {
                     case 2 -> removeReceptionist();
                     case 3 -> viewReceptionists();
                     case 4 -> new DoctorManagement().init();
-                    case 5 -> Base.saveDetails();
-                    case 6 -> Base.fetchDetails();
-                    case 7 -> {
+                    case 5 -> {
                         new CarePlus().init();
                         return;
                     }
@@ -66,12 +65,13 @@ public class AdminManagement {
     }
 
     private void viewReceptionists() {
-        if (Data.receptionists.isEmpty()) {
+        Map<String, Receptionist> map = receptionistDAO.getAllReceptionists();
+        if (map.isEmpty()) {
             System.out.println("No data available regarding receptionists.");
             return;
         }
         System.out.println("--------- List of Receptionists ---------");
-        for (Receptionist receptionist : Data.receptionists.values()) {
+        for (Receptionist receptionist : map.values()) {
             System.out.println(receptionist);
             System.out.println("-----------------------------------------");
         }
@@ -84,8 +84,8 @@ public class AdminManagement {
             System.out.println("Username must contain only letters.");
             return;
         }
-        if (Data.receptionists.containsKey(username)) {
-            Data.receptionists.remove(username);
+        boolean removed = receptionistDAO.removeReceptionist(username);
+        if (removed) {
             System.out.println("Receptionist removed successfully.");
         } else {
             System.out.println("Receptionist not found.");
@@ -98,9 +98,14 @@ public class AdminManagement {
             String user = enterUsername();
             String pass = enterPassword();
             Receptionist receptionist = new Receptionist(user, name, pass);
-            Data.receptionists.put(user, receptionist);
-            System.out.println("Receptionist added successfully:");
-            System.out.println(receptionist);
+            receptionist.receptionistId = receptionistDAO.getNextReceptionistId();
+            boolean success = receptionistDAO.addReceptionist(receptionist);
+            if (success) {
+                System.out.println("Receptionist added successfully:");
+                System.out.println(receptionist);
+            } else {
+                System.out.println("Error while adding receptionist.");
+            }
         } catch (Exception e) {
             System.out.println("Error while adding receptionist.");
         }
@@ -112,8 +117,8 @@ public class AdminManagement {
             String pass = scan.nextLine();
             if (pass.length() < 3) {
                 System.out.println("Password must be at least 3 characters.");
-            } else if (!pass.matches("[a-zA-Z]+")) {
-                System.out.println("Password must contain only letters.");
+            } else if (!pass.matches("[a-zA-Z0-9]+")) {
+                System.out.println("Password must contain only letters and digits.");
             } else return pass;
         }
     }

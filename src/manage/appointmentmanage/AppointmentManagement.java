@@ -1,14 +1,26 @@
 package manage.appointmentmanage;
 
 import base.Base;
+import dao.AppointmentDAO;
+import dao.DoctorDAO;
+import dao.PatientDAO;
 import entity.Appointment;
-import storage.Data;
+import entity.Doctor;
+import entity.Patient;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class AppointmentManagement {
 
-    Scanner scan = new Scanner(System.in);
+    private final Scanner scan = new Scanner(System.in);
+    private final AppointmentDAO appointmentDAO = new AppointmentDAO();
+    private final DoctorDAO doctorDAO = new DoctorDAO();
+    private final PatientDAO patientDAO = new PatientDAO();
+
+    private final Map<String, Doctor> doctorMap = doctorDAO.getAllDoctors();
+    private final Map<String, Patient> patientMap = patientDAO.getAllPatients();
 
     public void init() {
         try {
@@ -29,7 +41,9 @@ public class AppointmentManagement {
                         case 1 -> viewAllAppointments();
                         case 2 -> viewDoctorAppointment();
                         case 3 -> viewPatientAppointment();
-                        case 4 -> { return; }
+                        case 4 -> {
+                            return;
+                        }
                         default -> System.out.println("Invalid choice.");
                     }
                 } catch (NumberFormatException e) {
@@ -42,20 +56,15 @@ public class AppointmentManagement {
         }
     }
 
-    private void viewPatientAppointment() {
-        String patientId = getValidId("Patient");
-        if (patientId == null) return;
-
-        boolean found = false;
-        for (Appointment appointment : Data.appoinments.values()) {
-            if (appointment.patient.patientId.equalsIgnoreCase(patientId)) {
-                displayAppointment(appointment);
-                found = true;
-            }
+    private void viewAllAppointments() {
+        Map<String, Appointment> appointments = appointmentDAO.getAllAppointments(doctorMap, patientMap);
+        if (appointments.isEmpty()) {
+            System.out.println("No appointments available.");
+            return;
         }
 
-        if (!found) {
-            System.out.println("No appointments found for the given patient.");
+        for (Appointment appointment : appointments.values()) {
+            displayAppointment(appointment);
         }
     }
 
@@ -63,26 +72,28 @@ public class AppointmentManagement {
         String doctorId = getValidId("Doctor");
         if (doctorId == null) return;
 
-        boolean found = false;
-        for (Appointment appointment : Data.appoinments.values()) {
-            if (appointment.doctor.doctorId.equalsIgnoreCase(doctorId)) {
-                displayAppointment(appointment);
-                found = true;
-            }
-        }
-
-        if (!found) {
+        List<Appointment> list = appointmentDAO.getAppointmentsByDoctorId(doctorId, doctorMap, patientMap);
+        if (list.isEmpty()) {
             System.out.println("No appointments found for the given doctor.");
-        }
-    }
-
-    private void viewAllAppointments() {
-        if (Data.appoinments.isEmpty()) {
-            System.out.println("No appointments available.");
             return;
         }
 
-        for (Appointment appointment : Data.appoinments.values()) {
+        for (Appointment appointment : list) {
+            displayAppointment(appointment);
+        }
+    }
+
+    private void viewPatientAppointment() {
+        String patientId = getValidId("Patient");
+        if (patientId == null) return;
+
+        List<Appointment> list = appointmentDAO.getAppointmentsByPatientId(patientId, doctorMap, patientMap);
+        if (list.isEmpty()) {
+            System.out.println("No appointments found for the given patient.");
+            return;
+        }
+
+        for (Appointment appointment : list) {
             displayAppointment(appointment);
         }
     }
@@ -99,24 +110,24 @@ public class AppointmentManagement {
         System.out.print("Enter the " + type + " ID: ");
         String id = scan.nextLine();
 
-        String pattern = type.equals("Doctor") ? "[D]\\d+" : "[P]\\d+";
+        String pattern = type.equals("Doctor") ? "D\\d+" : "P\\d+";
 
         if (!id.matches(pattern)) {
             System.out.println("Invalid " + type + " ID format. It must start with " +
-                    (type.equals("Doctor") ? "'d' (e.g. d1)" : "'p' (e.g. p1)") + " followed by digits.");
+                    (type.equals("Doctor") ? "'D' (e.g. D1)" : "'P' (e.g. P1)") + " followed by digits.");
             return null;
         }
 
-        if (type.equals("Doctor") && !Data.doctors.containsKey(id.toLowerCase())) {
+        if (type.equals("Doctor") && !doctorMap.containsKey(id)) {
             System.out.println("Doctor ID not found.");
             return null;
         }
 
-        if (type.equals("Patient") && !Data.patients.containsKey(id.toLowerCase())) {
+        if (type.equals("Patient") && !patientMap.containsKey(id)) {
             System.out.println("Patient ID not found.");
             return null;
         }
 
-        return id.toLowerCase();
+        return id;
     }
 }

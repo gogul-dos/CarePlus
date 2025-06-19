@@ -1,7 +1,5 @@
 package entity;
 
-import storage.Data;
-
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,16 +8,15 @@ import java.util.List;
 
 public class Patient implements Serializable {
     private static final long serialVersionUID = 3L;
+
     public String patientId;
     public String name;
-    Long mobileNumber;
-    Integer age;
-    String gender;
+    public Long mobileNumber;
+    public Integer age;
+    public String gender;
     public List<Appointment> bookedAppoinments;
-    public static Integer counter = Data.patients.size();
 
     public Patient(String name, Long mobileNumber, Integer age, String gender) {
-        this.patientId = "P" + ++counter;
         this.name = name;
         this.mobileNumber = mobileNumber;
         this.age = age;
@@ -27,24 +24,30 @@ public class Patient implements Serializable {
         this.bookedAppoinments = new ArrayList<>();
     }
 
-    public String toString(){
+    @Override
+    public String toString() {
         StringBuilder result = new StringBuilder("Patient ID: " + this.patientId + "\nName: "
                 + this.name + "\nAge: " + this.age + "\nGender: " + this.gender
-                + "\nContact Info: " + this.mobileNumber +"\nToday Appointment Id's are:");
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-YYYY");
+                + "\nContact Info: " + this.mobileNumber + "\nToday Appointment Id's are: ");
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy"); // Fixed year format
         String today = sdf.format(new Date());
         List<Appointment> todaysAppointments = new ArrayList<>();
-        for(Appointment appoinment: bookedAppoinments){
-            if(appoinment.date.equals(today)) todaysAppointments.add(appoinment);
+
+        for (Appointment appointment : bookedAppoinments) {
+            if (appointment.date.equals(today)) {
+                todaysAppointments.add(appointment);
+            }
         }
 
-        if(todaysAppointments.isEmpty()){
+        if (todaysAppointments.isEmpty()) {
             result.append("No Appointments");
-            return result.toString();
+        } else {
+            for (Appointment appointment : todaysAppointments) {
+                result.append(appointment.appointmentId).append("  ");
+            }
         }
-        for(Appointment appointment: todaysAppointments){
-            result.append(appointment.appointmentId).append("  ");
-        }
+
         return result.toString();
     }
 }

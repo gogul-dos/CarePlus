@@ -1,13 +1,17 @@
 package manage.patientmanage;
 
 import base.Base;
+import dao.PatientDAO;
 import entity.Patient;
-import storage.Data;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class PatientManagement {
-    Scanner scan = new Scanner(System.in);
+
+    private final Scanner scan = new Scanner(System.in);
+    private final PatientDAO patientDAO = new PatientDAO();
 
     public void init() {
         try {
@@ -21,7 +25,7 @@ public class PatientManagement {
                 try {
                     String input = scan.nextLine();
                     if (!input.matches("\\d+")) throw new NumberFormatException();
-                    Integer option = Integer.parseInt(input);
+                    int option = Integer.parseInt(input);
                     switch (option) {
                         case 1 -> addPatient();
                         case 2 -> viewAllPatient();
@@ -39,12 +43,27 @@ public class PatientManagement {
         }
     }
 
+    private void viewAllPatient() {
+        Map<String, Patient> patients = patientDAO.getAllPatients();
+        if (patients.isEmpty()) {
+            System.out.println("No data available regarding patients.");
+            return;
+        }
+
+        for (Patient patient : patients.values()) {
+            System.out.println(patient);
+            System.out.println("-------------------------------------------------------------------------");
+        }
+    }
+
     private void searchByName() {
+        Map<String, Patient> patients = patientDAO.getAllPatients();
+
         System.out.print("Enter a name to search: ");
         String searchInput = scan.nextLine();
         boolean found = false;
 
-        for (Patient patient : Data.patients.values()) {
+        for (Patient patient : patients.values()) {
             if (patient.name.toLowerCase().contains(searchInput.toLowerCase())) {
                 System.out.println(patient);
                 System.out.println("-------------------------------------------------------------------------");
@@ -57,18 +76,6 @@ public class PatientManagement {
         }
     }
 
-    private void viewAllPatient() {
-        if (Data.patients.isEmpty()) {
-            System.out.println("No data available regarding patients.");
-            return;
-        }
-
-        for (Patient patient : Data.patients.values()) {
-            System.out.println(patient);
-            System.out.println("-------------------------------------------------------------------------");
-        }
-    }
-
     private void addPatient() {
         try {
             String name = getName();
@@ -77,10 +84,16 @@ public class PatientManagement {
             String gender = getGender();
 
             Patient patient = new Patient(name, mobileNumber, age, gender);
-            Data.patients.put(patient.patientId, patient);
+            patient.patientId = patientDAO.getNextPatientId();
+            boolean success = patientDAO.addPatient(patient);
 
-            System.out.println("The following Patient added successfully!");
-            System.out.println(patient);
+            if (success) {
+                System.out.println("The following Patient added successfully!");
+                System.out.println(patient);
+            } else {
+                System.out.println("Failed to add patient.");
+            }
+
         } catch (Exception e) {
             System.out.println("Error occurred while adding patient.");
             if (Base.needToContinue()) addPatient();
